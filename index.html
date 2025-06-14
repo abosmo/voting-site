@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام التصويت</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      direction: rtl;
+    }
+    .counters {
+      display: flex;
+      gap: 50px;
+      margin-bottom: 20px;
+      font-size: 36px;
+    }
+    .buttons {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    button {
+      font-size: 20px;
+      padding: 15px 30px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    .yes {
+      background-color: #4caf50;
+      color: white;
+    }
+    .no {
+      background-color: #f44336;
+      color: white;
+    }
+    .yes:hover {
+      background-color: #45a049;
+    }
+    .no:hover {
+      background-color: #e53935;
+    }
+    .selected {
+      box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.2);
+    }
+    .admin-section {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #admin-login {
+      margin-top: 10px;
+      background-color: #888;
+      color: white;
+    }
+    #admin-login:hover {
+      background-color: #666;
+    }
+    #reset-btn {
+      display: none;
+      margin-top: 10px;
+      background-color: #2196f3;
+      color: white;
+    }
+    #reset-btn:hover {
+      background-color: #1976d2;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="counters">
+    <div class="counter">✅ <span id="yes-count">0</span></div>
+    <div class="counter">❌ <span id="no-count">0</span></div>
+  </div>
+
+  <div class="buttons">
+    <button class="yes" onclick="vote('yes')" id="yes-btn">✅</button>
+    <button class="no" onclick="vote('no')" id="no-btn">❌</button>
+  </div>
+
+  <div class="admin-section">
+    <input type="password" id="admin-code" placeholder="ادخل رمز الأدمن">
+    <button id="admin-login" onclick="checkAdmin()">دخول الأدمن</button>
+    <button id="reset-btn" onclick="resetVotes()">إعادة التصويت</button>
+  </div>
+
+  <script>
+    let yesCount = 0;
+    let noCount = 0;
+    const ADMIN_PASSWORD = "1234";
+    let userVote = null;
+
+    function updateCounters() {
+      document.getElementById("yes-count").innerText = yesCount;
+      document.getElementById("no-count").innerText = noCount;
+    }
+
+    function vote(choice) {
+      if (userVote !== null) return;
+
+      if (choice === 'yes') {
+        yesCount++;
+        document.getElementById("yes-btn").classList.add("selected");
+      } else if (choice === 'no') {
+        noCount++;
+        document.getElementById("no-btn").classList.add("selected");
+      }
+
+      userVote = choice;
+      updateCounters();
+    }
+
+    function checkAdmin() {
+      const input = document.getElementById("admin-code").value;
+      if (input === ADMIN_PASSWORD) {
+        document.getElementById("reset-btn").style.display = "inline-block";
+        alert("تم الدخول كأدمن");
+      } else {
+        alert("رمز خاطئ!");
+      }
+    }
+
+    function resetVotes() {
+      if (confirm("هل أنت متأكد من إعادة التصويت؟")) {
+        yesCount = 0;
+        noCount = 0;
+        userVote = null;
+
+        document.getElementById("yes-btn").classList.remove("selected");
+        document.getElementById("no-btn").classList.remove("selected");
+
+        updateCounters();
+      }
+    }
+  </script>
+</body>
+</html>
