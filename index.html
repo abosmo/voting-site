@@ -89,15 +89,11 @@
       border-radius: 8px;
       border: 1px solid #ccc;
     }
-    span#yes-count:, span#yes-count {
-    background: #ffffff;
-    padding: 1px 11px;
-    border-radius: 12px;
-}{
-    background: #ffffff;
-    padding: 1px 11px;
-    border-radius: 12px;
-}
+    span#yes-count, span#no-count {
+      background: #ffffff;
+      padding: 1px 11px;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
@@ -112,8 +108,8 @@
   </div>
 
   <div class="admin-section">
-    <input type="password" id="admin-code" placeholder="ادخل رمز الأدمن">
-    <button id="admin-login" onclick="checkAdmin()">دخول الأدمن</button>
+    <input type="password" id="admin-code" placeholder="ادخل رمز الدخول">
+    <button id="admin-login" onclick="checkAdmin()">دخول</button>
     <button id="reset-btn" onclick="resetVotes()">إعادة التصويت</button>
   </div>
 
@@ -134,6 +130,21 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    let lastReset = 0;
+    db.ref("votes/resetTime").on("value", snapshot => {
+      const newResetTime = snapshot.val() || 0;
+      if (newResetTime > lastReset) {
+        lastReset = newResetTime;
+        userVote = null;
+
+        const yesBtn = document.getElementById("yes-btn");
+        const noBtn = document.getElementById("no-btn");
+
+        yesBtn.classList.remove("selected", "disabled");
+        noBtn.classList.remove("selected", "disabled");
+      }
+    });
 
     let userVote = null;
 
@@ -169,7 +180,12 @@
     }
 
     function resetVotes() {
-      db.ref("votes").set({ yes: 0, no: 0 });
+      db.ref("votes").set({
+        yes: 0,
+        no: 0,
+        resetTime: Date.now()
+      });
+
       userVote = null;
 
       const yesBtn = document.getElementById("yes-btn");
